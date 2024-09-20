@@ -80,9 +80,39 @@ void yangle_pid(double setpoint, double curr_pt, motor_data_t *motor, float imu_
  *
  */
 void angle_pid(double setpoint, double curr_pt, motor_data_t *motor) {
-	// todo: Implement pid
-	double curr_error = setpoint - curr_pt;
 
+	//update time
+	uint32_t curr_time = get_microseconds();
+
+	motor->angle_pid.last_time[1] = motor->angle_pid.last_time[0];
+	motor->angle_pid.last_time[0] = curr_time;
+	double delta_time = motor->angle_pid.last_time[0] - motor->angle_pid.last_time[1];
+
+
+	if (delta_time == 0) {
+		delta_time = 0.001;
+	}
+
+	//update error
+	double curr_error = setpoint - curr_pt;
+	motor->angle_pid.error[1] = motor->angle_pid.error[0];
+	motor->angle_pid.error[0] = curr_error;
+
+
+	//calculate p,i,d for output
+	double p = motor->angle_pid.kp * curr_error;
+
+	motor->angle_pid.integral += curr_error * delta_time;
+	double i = motor->angle_pid.integral * motor->angle_pid.ki;
+
+	double derivative = (motor->angle_pid.error[0] - motor->angle_pid.error[1]) / delta_time;
+	double d = derivative * motor->angle_pid.ki;
+
+	double curr_output = p + i + d;
+
+	motor->angle_pid.output = curr_output;
+	// unclear if curr_output is correct (ie is it current RPM or is it current angle bc its calculated using angle_pid)
+	speed_pid(motor->angle_pid.output, motor->raw_data.rpm, &motor->rpm_pid);
 }
 
 
@@ -97,14 +127,13 @@ void angle_pid(double setpoint, double curr_pt, motor_data_t *motor) {
  * @param *pid pointer to the rpm_pid struct within the motor's data struct
  */
 void speed_pid(double setpoint, double curr_pt, pid_data_t *pid) {
-	// todo: Implement pid
 
 	//update time
     uint32_t curr_time = get_microseconds();
 
-    double delta_time = curr_time - pid->last_time[0];
     pid->last_time[1] = pid->last_time[0];
     pid->last_time[0] = curr_time;
+    double delta_time = pid->last_time[0] - pid->last_time[1];
 
 
     if (delta_time == 0) {
@@ -123,7 +152,7 @@ void speed_pid(double setpoint, double curr_pt, pid_data_t *pid) {
 	pid->integral += curr_error * delta_time;
 	double i = pid->integral * pid->ki;
 
-	double derivative = (pid[0] - pid[1]) / delta_time;
+	double derivative = (pid->error[0] - pid->error[1]) / delta_time;
 	double d = derivative * pid->ki;
 
 	double curr_output = p + i + d;
