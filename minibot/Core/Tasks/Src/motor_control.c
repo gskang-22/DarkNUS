@@ -81,6 +81,8 @@ void yangle_pid(double setpoint, double curr_pt, motor_data_t *motor, float imu_
  */
 void angle_pid(double setpoint, double curr_pt, motor_data_t *motor) {
 	// todo: Implement pid
+	double curr_error = setpoint - curr_pt;
+
 }
 
 
@@ -90,13 +92,43 @@ void angle_pid(double setpoint, double curr_pt, motor_data_t *motor) {
  * make sure an integral value is initialised (VERY SMALL, like 0.0001 or smaller)
  * as their systems usually have a steady state error
  *
- *
  * @param setpoint target RPM
  * @param motor's current RPM
  * @param *pid pointer to the rpm_pid struct within the motor's data struct
  */
 void speed_pid(double setpoint, double curr_pt, pid_data_t *pid) {
 	// todo: Implement pid
+
+	//update time
+    uint32_t curr_time = get_microseconds();
+
+    double delta_time = curr_time - pid->last_time[0];
+    pid->last_time[1] = pid->last_time[0];
+    pid->last_time[0] = curr_time;
+
+
+    if (delta_time == 0) {
+        delta_time = 0.001;
+    }
+
+    //update error
+	double curr_error = setpoint - curr_pt;
+	pid->error[1] = pid->error[0];
+	pid->error[0] = curr_error;
+
+
+	//calculate p,i,d for output
+	double p = pid->kp * curr_error;
+
+	pid->integral += curr_error * delta_time;
+	double i = pid->integral * pid->ki;
+
+	double derivative = (pid[0] - pid[1]) / delta_time;
+	double d = derivative * pid->ki;
+
+	double curr_output = p + i + d;
+
+	pid->output = curr_output;
 }
 
 /*
