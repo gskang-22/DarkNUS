@@ -76,6 +76,8 @@ void remote_chassis_input() {
 			if (g_remote_cmd.left_switch == ge_LSW_STANDBY){
 				// todo: Implement using remote side dial to do spinspin
 				yaw_input = g_remote_cmd.side_dial / RC_LIMITS;
+				// make the control smoother if it works
+				yaw_input *= yaw_input;
 			} else {
 				yaw_input = chassis_center_yaw();
 			}
