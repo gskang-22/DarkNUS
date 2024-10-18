@@ -79,16 +79,16 @@ void keyboard_chassis_input() {
 
 #ifdef CHASSIS_CAN_SPINSPIN
             // TODO: spinspin logic (basically done, but maybe not fully correct)
-            if (g_remote_cmd.keyboard_keys & KEY_OFFSET_SPACE) {
-                g_spinspin_mode = !g_spinspin_mode;  // Toggle spin mode
-            }
-
-            if (g_spinspin_mode && curr_spinspin < SPINSPIN_MAX_YAW_SPD) {
-              curr_spinspin += SPINSPIN_CHANGE;  // Adjust this increment as needed
-            } else if (curr_spinspin >  0){
-              curr_spinspin -= SPINSPIN_CHANGE;  // Adjust this decrement as needed
-            }
-            yaw_input = curr_spinspin;
+//            if (g_remote_cmd.keyboard_keys & KEY_OFFSET_SPACE) {
+//                g_spinspin_mode = !g_spinspin_mode;  // Toggle spin mode
+//            }
+//
+//            if (g_spinspin_mode && curr_spinspin < SPINSPIN_MAX_YAW_SPD) {
+//              curr_spinspin += SPINSPIN_CHANGE;  // Adjust this increment as needed
+//            } else if (curr_spinspin >  0){
+//              curr_spinspin -= SPINSPIN_CHANGE;  // Adjust this decrement as needed
+//            }
+//            yaw_input = curr_spinspin;
 
 #endif
 

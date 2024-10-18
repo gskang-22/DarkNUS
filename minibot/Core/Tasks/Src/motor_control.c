@@ -103,15 +103,13 @@ void angle_pid(double setpoint, double curr_pt, motor_data_t *motor) {
 	//calculate p,i,d for output
 	double p = motor->angle_pid.kp * angle_diff;
 
-	double derivative = (motor->angle_pid.error[0] - motor->angle_pid.error[1]) / delta_time;
+	double derivative = (motor->angle_pid.error[0] - motor->angle_pid.error[1]);
 	double d = derivative * motor->angle_pid.kd;
 
-//	motor->angle_pid.integral += curr_error * delta_time;
+	motor->angle_pid.integral += curr_error;
 //	float_minmax(&motor->angle_pid.integral, motor->angle_pid.int_max, 0);
 //	double i = motor->angle_pid.integral * motor->angle_pid.ki;
-	motor->angle_pid.integral += motor->angle_pid.error[0]  * motor->angle_pid.ki * delta_time;
-	float_minmax(&motor->angle_pid.integral, motor->angle_pid.int_max, 0);
-	double i = motor->angle_pid.integral; //diff
+	double i = motor->angle_pid.ki * motor->angle_pid.integral;
 
 	double curr_output = p + i + d;
 
@@ -154,10 +152,10 @@ void speed_pid(double setpoint, double curr_pt, pid_data_t *pid) {
 	//calculate p,i,d for output
 	double p = pid->kp * curr_error;
 
-	pid->integral += curr_error * delta_time;
+	pid->integral += curr_error;
 	double i = pid->integral * pid->ki;
 
-	double derivative = (pid->error[0] - pid->error[1]) / delta_time;
+	double derivative = (pid->error[0] - pid->error[1]);
 	double d = derivative * pid->kd;
 
 	double curr_output = p + i + d;
