@@ -24,6 +24,9 @@ extern uint8_t launcher_safety_toggle;
 extern int g_spinspin_mode;
 static float curr_spinspin = 0;
 
+#define SPINSPIN_MAX_YAW_SPD 100.0f
+#define SPINSPIN_CHANGE 10.0f
+
 
 
 void keyboard_control_input() {
@@ -75,7 +78,18 @@ void keyboard_chassis_input() {
 
 
 #ifdef CHASSIS_CAN_SPINSPIN
-			// todo: Map keyboard keys to do spinspin
+            // TODO: spinspin logic (basically done, but maybe not fully correct)
+            if (g_remote_cmd.keyboard_keys & KEY_OFFSET_SPACE) {
+                g_spinspin_mode = !g_spinspin_mode;  // Toggle spin mode
+            }
+
+            if (g_spinspin_mode && curr_spinspin < SPINSPIN_MAX_YAW_SPD) {
+              curr_spinspin += SPINSPIN_CHANGE;  // Adjust this increment as needed
+            } else if (curr_spinspin >  0){
+              curr_spinspin -= SPINSPIN_CHANGE;  // Adjust this decrement as needed
+            }
+            yaw_input = curr_spinspin;
+
 #endif
 
 			if (g_remote_cmd.keyboard_keys & KEY_OFFSET_W) {
@@ -91,8 +105,6 @@ void keyboard_chassis_input() {
 			if (g_remote_cmd.keyboard_keys & KEY_OFFSET_D) {
 				horizontal_input += KEYBD_MAX_SPD;
 			}
-
-			// todo: Spinspin logic, make the chassis spin!
 
 			chassis_set_ctrl(forward_input, horizontal_input, yaw_input);
 		}
