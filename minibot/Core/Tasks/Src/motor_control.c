@@ -106,7 +106,7 @@ void angle_pid(double setpoint, double curr_pt, motor_data_t *motor) {
 	double derivative = (motor->angle_pid.error[0] - motor->angle_pid.error[1]);
 	double d = derivative * motor->angle_pid.kd;
 
-	motor->angle_pid.integral += curr_error;
+	motor->angle_pid.integral += angle_diff;
 //	float_minmax(&motor->angle_pid.integral, motor->angle_pid.int_max, 0);
 //	double i = motor->angle_pid.integral * motor->angle_pid.ki;
 	double i = motor->angle_pid.ki * motor->angle_pid.integral;
