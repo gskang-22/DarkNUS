@@ -106,10 +106,10 @@ void angle_pid(double setpoint, double curr_pt, motor_data_t *motor) {
 	double derivative = (motor->angle_pid.error[0] - motor->angle_pid.error[1]);
 	double d = derivative * motor->angle_pid.kd;
 
-	motor->angle_pid.integral += curr_error;
-//	float_minmax(&motor->angle_pid.integral, motor->angle_pid.int_max, 0);
+	motor->angle_pid.integral += motor->angle_pid.error[0] * motor->angle_pid.ki;
+	float_minmax(&motor->angle_pid.integral, motor->angle_pid.int_max, 0);
 //	double i = motor->angle_pid.integral * motor->angle_pid.ki;
-	double i = motor->angle_pid.ki * motor->angle_pid.integral;
+	double i = motor->angle_pid.ki;
 
 	double curr_output = p + i + d;
 
@@ -152,16 +152,21 @@ void speed_pid(double setpoint, double curr_pt, pid_data_t *pid) {
 	//calculate p,i,d for output
 	double p = pid->kp * curr_error;
 
-	pid->integral += curr_error;
-	double i = pid->integral * pid->ki;
+//	pid->integral += pid->ki * pid->error[0];
+	pid->integral += curr_error * delta_time * pid->ki;
+	float_minmax(&pid->integral, pid->int_max, 0);
+//	double i = pid->ki;
+	double i = pid->integral;
 
-	double derivative = (pid->error[0] - pid->error[1]);
+//	double derivative = (pid->error[0] - pid->error[1]);
+    double derivative = (curr_error - pid->error[0]) / delta_time;
 	double d = derivative * pid->kd;
 
 	double curr_output = p + i + d;
-
 	pid->output = curr_output;
 }
+
+// possible reasons for overcompensation: too high kp, too low kd, too high ki
 
 /*
  * Function to send commands
