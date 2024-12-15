@@ -171,9 +171,9 @@
 #define CLEAR_DELAY				1000
 
 /*********************** CHASSIS CONFIGURATION ***********************/
-#define CHASSIS_KP  		4				// |
-#define CHASSIS_KI  		0.1				// | - CHASSIS WHEELS PID VALUES
-#define CHASSIS_KD  		1				// |
+#define CHASSIS_KP  		4			// |
+#define CHASSIS_KI  		0.1			// | - CHASSIS WHEELS PID VALUES
+#define CHASSIS_KD  		0			// |
 #define CHASSIS_INT_MAX  	1000				// |
 #define CHASSIS_MAX_CURRENT 6000//9000
 #define CHASSIS_MIN_CURRENT 0
@@ -236,7 +236,7 @@
 #define YAWRPM_INT_MAX			200
 #define YAW_MAX_CURRENT			20000
 
-#define YAW_CENTER 				0//2790//7870//
+#define YAW_CENTER 				7870//0//2790//7870//
 #define YAW_MAX_ANG				5*PI
 #define YAW_MIN_ANG				5*-PI
 
@@ -245,28 +245,28 @@
 //ADD 4 TO GM6020 IDS i.e. flashing 5 times = ID 9
 //#define CHASSIS_MCU
 #ifndef CHASSIS_MCU
-#define FR_MOTOR_ID 		5
-#define FR_MOTOR_CAN_PTR	&hcan1
-#define FL_MOTOR_ID 		1
-#define FL_MOTOR_CAN_PTR	&hcan1
-#define BL_MOTOR_ID 		6
-#define BL_MOTOR_CAN_PTR	&hcan1
-#define BR_MOTOR_ID 		3
-#define BR_MOTOR_CAN_PTR	&hcan1
+#define FR_MOTOR_ID 		15
+#define FR_MOTOR_CAN_PTR	&hcan2
+#define FL_MOTOR_ID 		18
+#define FL_MOTOR_CAN_PTR	&hcan2
+#define BL_MOTOR_ID 		17
+#define BL_MOTOR_CAN_PTR	&hcan2
+#define BR_MOTOR_ID 		13
+#define BR_MOTOR_CAN_PTR	&hcan2
 #endif
-#define FEEDER_MOTOR_ID		7
+#define FEEDER_MOTOR_ID		1
 #define FEEDER_MOTOR_CAN_PTR	&hcan1
-#define LFRICTION_MOTOR_ID	12
+#define LFRICTION_MOTOR_ID	5
 #define LFRICTION_MOTOR_CAN_PTR	&hcan1
-#define RFRICTION_MOTOR_ID	13
+#define RFRICTION_MOTOR_ID	3
 #define RFRICTION_MOTOR_CAN_PTR	&hcan1
 
 //NOTE: two motors CANNOT have the same __flashing__ number (i.e. GM6020 id 9 cannot be used
 //with any id 6 motors
-#define PITCH_MOTOR_ID 		8
+#define PITCH_MOTOR_ID 		9 // cannot turn at all
 #define PITCH_MOTOR_CAN_PTR	&hcan1
 #ifndef CHASSIS_MCU
-#define YAW_MOTOR_ID 		20
+#define YAW_MOTOR_ID 		23 // have issues turning on its own
 #define YAW_MOTOR_CAN_PTR	&hcan2
 #endif
 

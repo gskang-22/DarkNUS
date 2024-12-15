@@ -136,7 +136,9 @@ void speed_pid(double setpoint, double curr_pt, pid_data_t *pid) {
 
     pid->last_time[1] = pid->last_time[0];
     pid->last_time[0] = curr_time;
-    double delta_time = pid->last_time[0] - pid->last_time[1];
+//    double delta_time = pid->last_time[0] - pid->last_time[1];
+    double delta_time = (pid->last_time[0] - pid->last_time[1]) / 1000000.0;
+
 
 
     if (delta_time == 0) {
@@ -154,16 +156,29 @@ void speed_pid(double setpoint, double curr_pt, pid_data_t *pid) {
 
 //	pid->integral += pid->ki * pid->error[0];
 	pid->integral += curr_error * delta_time * pid->ki;
+
+	if (fabs(curr_error) < 0.01) {  // Error threshold to consider "close enough"
+	    pid->integral = 0;          // Reset integral term
+	}
+
 	float_minmax(&pid->integral, pid->int_max, 0);
 //	double i = pid->ki;
 	double i = pid->integral;
 
+
 //	double derivative = (pid->error[0] - pid->error[1]);
-    double derivative = (curr_error - pid->error[0]) / delta_time;
+    double derivative = (curr_error - pid->error[1]) / delta_time;
 	double d = derivative * pid->kd;
 
 	double curr_output = p + i + d;
+	float_minmax(&pid->output, pid->max_out, 0);
 	pid->output = curr_output;
+
+//	if (setpoint == 0) { // prevents robot from running forever
+//		pid->output = 0;
+//	} else {
+//		pid->output = curr_output;
+//	}
 }
 
 // possible reasons for overcompensation: too high kp, too low kd, too high ki

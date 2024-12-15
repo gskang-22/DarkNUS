@@ -20,19 +20,23 @@ extern TaskHandle_t referee_processing_task_handle;
 extern DMA_HandleTypeDef hdma_usart6_rx;
 referee_limit_t g_referee_limiters;
 static ref_msg_t g_ref_msg_buffer;
+
 ref_game_state_t ref_game_state;
 uint32_t ref_game_state_txno = 0;
+
 ref_game_robot_HP_t ref_robot_hp;
 uint32_t ref_robot_hp_txno = 0;
+
 ref_game_robot_data2_t ref_robot_data;
 uint32_t ref_robot_data_txno = 0;
-ref_robot_power_data_t ref_power_data;
+
+ref_robot_power_data_t ref_power_data; //
 uint32_t ref_power_data_txno = 0;
 
 ref_game_robot_pos_t ref_robot_pos;
 uint32_t ref_robot_pos_txno = 0;
 
-ref_buff_data_t ref_buff_data;
+ref_buff_data_t ref_buff_data; //
 uint32_t ref_buff_data_txno = 0;
 
 ref_robot_dmg_t ref_dmg_data;
@@ -115,6 +119,11 @@ void referee_processing_task(void *argument) {
 						ref_mag_data_txno++;
 						//add in the memcpys here
 						break;
+//					case :
+//						memcpy(&ref_power_data, &g_ref_msg_buffer.data,
+//								sizeof(ref_robot_power_data_t));
+//						ref_power_data_txno++;
+//						break;
 					default:
 						break;
 					/* todo: Get data from the referee system if necessary

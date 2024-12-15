@@ -142,9 +142,9 @@ void gimbal_control(motor_data_t *pitch_motor, motor_data_t *yaw_motor) {
 				- (pitch_motor->angle_data.adj_ang);
 	}
 
-	yangle_pid(gimbal_ctrl_data.pitch,imu_heading.pit, pitch_motor,
-			imu_heading.pit, &prev_pit,1);
-//	angle_pid(gimbal_ctrl_data.pitch,imu_heading.pit, pitch_motor);
+//	yangle_pid(gimbal_ctrl_data.pitch,imu_heading.pit, pitch_motor,
+//			imu_heading.pit, &prev_pit,1);
+	angle_pid(gimbal_ctrl_data.pitch,imu_heading.pit, pitch_motor); // changed
 
 	int32_t temp_pit_output = pitch_motor->rpm_pid.output + PITCH_CONST;
 #ifdef MINIBOT_GIMBAL_CAP
@@ -224,8 +224,9 @@ void gimbal_control(motor_data_t *pitch_motor, motor_data_t *yaw_motor) {
 	}
 	xSemaphoreTake(gimbal_ctrl_data.yaw_semaphore,portMAX_DELAY);
 	gimbal_ctrl_data.delta_yaw -= turn_ang;
-	yangle_pid(gimbal_ctrl_data.delta_yaw, 0, yaw_motor,
-			imu_heading.yaw, &prev_yaw,0);
+//	yangle_pid(gimbal_ctrl_data.delta_yaw, 0, yaw_motor, //changed
+//			imu_heading.yaw, &prev_yaw,0);
+	angle_pid(gimbal_ctrl_data.delta_yaw, 0, yaw_motor); // added
 	xSemaphoreGive(gimbal_ctrl_data.yaw_semaphore);
 
 //	yangle_pid(gimbal_ctrl_data.yaw, imu_heading.yaw, yaw_motor,
