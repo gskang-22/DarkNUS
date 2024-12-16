@@ -19,6 +19,8 @@
 #define IMU_TARGET_TEMP	50
 
 //flip until motor angle and yaw angle matches
+// motor angle: yaw_motor->raw_data->raw_motor_angle
+// yaw angle: gimbal_ctrl_data->yaw OR imu_heading->yaw
 #define IMU_YAW_INVERT		-1
 #define IMU_PITCH_INVERT	1
 //nothing uses roll.....yet
@@ -223,8 +225,8 @@
 #define PITCH_CONST 			0
 
 
-#define YAW_ANGLE_KP			0
-#define YAW_ANGLE_KI			0
+#define YAW_ANGLE_KP			4
+#define YAW_ANGLE_KI			0.1
 #define YAW_ANGLE_KD			0
 #define YAW_ANGLE_INT_MAX		0.05
 #define YAW_MAX_RPM				85

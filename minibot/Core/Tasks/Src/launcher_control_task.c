@@ -90,6 +90,12 @@ uint16_t check_overheat() {
 	 * Hint 2: you need to get some data from the referee system
 	 */
 
+	// 0: overheated
+	// >0: system not overheated
+
+	//ref_robot_power_data_t->shooter_17mm_1_barrel_heat;
+
+	// return ref_power_data->shooter_17mm_1_barrel_heat;
 	return 1;
 #endif
 }

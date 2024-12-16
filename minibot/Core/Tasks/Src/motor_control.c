@@ -180,7 +180,6 @@ void speed_pid(double setpoint, double curr_pt, pid_data_t *pid) {
 //		pid->output = curr_output;
 //	}
 }
-
 // possible reasons for overcompensation: too high kp, too low kd, too high ki
 
 /*

@@ -119,11 +119,16 @@ void referee_processing_task(void *argument) {
 						ref_mag_data_txno++;
 						//add in the memcpys here
 						break;
-//					case :
-//						memcpy(&ref_power_data, &g_ref_msg_buffer.data,
-//								sizeof(ref_robot_power_data_t));
-//						ref_power_data_txno++;
-//						break;
+					case REF_ROBOT_POWER_DATA_CMD_ID:
+						memcpy(&ref_power_data, &g_ref_msg_buffer.data,
+								sizeof(ref_robot_power_data_t));
+						ref_power_data_txno++;
+						break;
+					case REF_ROBOT_BUFF_DATA_CMD_ID:
+						memcpy(&ref_buff_data, &g_ref_msg_buffer.data,
+								sizeof(ref_buff_data_t));
+						ref_buff_data_txno++;
+						break;
 					default:
 						break;
 					/* todo: Get data from the referee system if necessary

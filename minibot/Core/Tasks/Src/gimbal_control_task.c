@@ -226,7 +226,7 @@ void gimbal_control(motor_data_t *pitch_motor, motor_data_t *yaw_motor) {
 	gimbal_ctrl_data.delta_yaw -= turn_ang;
 //	yangle_pid(gimbal_ctrl_data.delta_yaw, 0, yaw_motor, //changed
 //			imu_heading.yaw, &prev_yaw,0);
-	angle_pid(gimbal_ctrl_data.delta_yaw, 0, yaw_motor); // added
+	angle_pid(gimbal_ctrl_data.delta_yaw, 0, yaw_motor); // added; why is this 0?? maybe delta_yaw is change in yaw, taking start point as 0
 	xSemaphoreGive(gimbal_ctrl_data.yaw_semaphore);
 
 //	yangle_pid(gimbal_ctrl_data.yaw, imu_heading.yaw, yaw_motor,
