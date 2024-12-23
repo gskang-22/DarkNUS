@@ -61,11 +61,18 @@ void yangle_pid(double setpoint, double curr_pt, motor_data_t *motor, float imu_
 	*prev_imu_data = imu_data;
 	motor->angle_pid.integral += motor->angle_pid.error[0]  * motor->angle_pid.ki;
 	float_minmax(&motor->angle_pid.integral, motor->angle_pid.int_max, 0);
-	float rpm_iOut = motor->angle_pid.ki;
+//	float rpm_iOut = motor->angle_pid.ki;
+
+	float rpm_iOut = motor->angle_pid.integral;
 
 	motor->angle_pid.output = rpm_pOut + rpm_dOut + rpm_iOut;
 	float_minmax(&motor->angle_pid.output, motor->angle_pid.max_out,0);
+
+	if (fabs(motor->angle_pid.error[0]) < 0.06) {
+	    motor->angle_pid.output = 0;
+	}
 	speed_pid(motor->angle_pid.output,imu_rpm, &motor->rpm_pid);
+
 }
 
 
@@ -103,18 +110,24 @@ void angle_pid(double setpoint, double curr_pt, motor_data_t *motor) {
 	//calculate p,i,d for output
 	double p = motor->angle_pid.kp * angle_diff;
 
-	double derivative = (motor->angle_pid.error[0] - motor->angle_pid.error[1]);
+	double derivative = (motor->angle_pid.error[0] - motor->angle_pid.error[1]) / delta_time;
 	double d = derivative * motor->angle_pid.kd;
 
 	motor->angle_pid.integral += motor->angle_pid.error[0] * motor->angle_pid.ki;
 	float_minmax(&motor->angle_pid.integral, motor->angle_pid.int_max, 0);
 //	double i = motor->angle_pid.integral * motor->angle_pid.ki;
-	double i = motor->angle_pid.ki;
+	double i = motor->angle_pid.integral;
 
 	double curr_output = p + i + d;
+//	if (setpoint == 0) { // prevents robot from running forever
+//		curr_output = 0;
+//	}
 
 	motor->angle_pid.output = curr_output;
+
 	float_minmax(&motor->angle_pid.output, motor->angle_pid.max_out,0);
+
+
 	speed_pid(motor->angle_pid.output, motor->raw_data.rpm, &motor->rpm_pid);
 }
 
@@ -136,8 +149,8 @@ void speed_pid(double setpoint, double curr_pt, pid_data_t *pid) {
 
     pid->last_time[1] = pid->last_time[0];
     pid->last_time[0] = curr_time;
-//    double delta_time = pid->last_time[0] - pid->last_time[1];
-    double delta_time = (pid->last_time[0] - pid->last_time[1]) / 1000000.0;
+    double delta_time = pid->last_time[0] - pid->last_time[1];
+//    double delta_time = (pid->last_time[0] - pid->last_time[1]) / 1000000.0;
 
 
 

@@ -4,6 +4,7 @@
  *  Created on: Sep 1, 2024
  *      Author: cw
  */
+// testing github
 
 #ifndef ROBOT_CONFIG_ROBOT_CONFIG_MINIBOT_H_
 #define ROBOT_CONFIG_ROBOT_CONFIG_MINIBOT_H_
@@ -14,7 +15,7 @@
 #define OVERHEAT_PROTECTION
 //#define BOARD_DOWN
 //0 for SWDIO port to be roll, 1 for SWDIO port to be pitch, 2 for vertical mount SWDIO port to the right
-#define IMU_ORIENTATION	2
+#define IMU_ORIENTATION	1
 //doesn't do anything,
 #define IMU_TARGET_TEMP	50
 
@@ -113,7 +114,7 @@
 
 #define KEYBD_MAX_SPD 			1//0.8//0.5				//% of max speed	//% of max speed
 
-#define GIMBAL_MODE 			1				//1 for IMU control, 0 for absolute angle based control
+#define GIMBAL_MODE 			1				//1 for IMU control, 0 for absolute angle based control // changed
 
 
 /* PID TUNING GUIDE
@@ -206,39 +207,39 @@
  * the motors
  */
 /*********************** GIMBAL CONFIGURATION ***********************/
-#define PITCH_ANGLE_KP	  		0
-#define PITCH_ANGLE_KI  		0
+#define PITCH_ANGLE_KP	  		100
+#define PITCH_ANGLE_KI  		0.1
 #define PITCH_ANGLE_KD  		0
 #define PITCH_ANGLE_INT_MAX		0.1
 #define PITCH_MAX_RPM			60
 
-#define PITCHRPM_KP				0
+#define PITCHRPM_KP				5000
 #define PITCHRPM_KI				0
 #define PITCHRPM_KD				0
 #define PITCHRPM_INT_MAX		10
 #define PITCH_MAX_CURRENT		20000
 
 #define PITCH_MOTOR_TYPE		TYPE_GM6020
-#define PITCH_CENTER			2071//3590
+#define PITCH_CENTER			-2630
 #define PITCH_MAX_ANG			0.50
 #define PITCH_MIN_ANG			-0.50
 #define PITCH_CONST 			0
 
 
-#define YAW_ANGLE_KP			4
-#define YAW_ANGLE_KI			0.1
+#define YAW_ANGLE_KP			100
+#define YAW_ANGLE_KI			0
 #define YAW_ANGLE_KD			0
 #define YAW_ANGLE_INT_MAX		0.05
 #define YAW_MAX_RPM				85
 #define YAW_SPINSPIN_CONSTANT	5000
 
-#define YAWRPM_KP				0
+#define YAWRPM_KP				150
 #define YAWRPM_KI				0
-#define YAWRPM_KD				0
+#define YAWRPM_KD				0.1
 #define YAWRPM_INT_MAX			200
 #define YAW_MAX_CURRENT			20000
 
-#define YAW_CENTER 				7870//0//2790//7870//
+#define YAW_CENTER 				2745//0//2790//7870//
 #define YAW_MAX_ANG				5*PI
 #define YAW_MIN_ANG				5*-PI
 
@@ -265,10 +266,10 @@
 
 //NOTE: two motors CANNOT have the same __flashing__ number (i.e. GM6020 id 9 cannot be used
 //with any id 6 motors
-#define PITCH_MOTOR_ID 		9 // cannot turn at all
+#define PITCH_MOTOR_ID 		11 // cannot turn at all
 #define PITCH_MOTOR_CAN_PTR	&hcan1
 #ifndef CHASSIS_MCU
-#define YAW_MOTOR_ID 		23 // have issues turning on its own
+#define YAW_MOTOR_ID 		22
 #define YAW_MOTOR_CAN_PTR	&hcan2
 #endif
 
