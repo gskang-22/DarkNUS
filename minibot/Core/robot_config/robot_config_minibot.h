@@ -174,8 +174,8 @@
 #define CLEAR_DELAY				1000
 
 /*********************** CHASSIS CONFIGURATION ***********************/
-#define CHASSIS_KP  		4			// |
-#define CHASSIS_KI  		0.1			// | - CHASSIS WHEELS PID VALUES
+#define CHASSIS_KP  		1.5		// |
+#define CHASSIS_KI  		0.01		// | - CHASSIS WHEELS PID VALUES
 #define CHASSIS_KD  		0			// |
 #define CHASSIS_INT_MAX  	1000				// |
 #define CHASSIS_MAX_CURRENT 6000//9000
@@ -186,7 +186,7 @@
 #define CHASSIS_SPINSPIN_MAX 1
 
 #define CHASSIS_YAW_MAX_RPM	0.75					//max RPM for chassis centering
-#define CHASSIS_YAW_KP 		3.5//1//0.7//0.4
+#define CHASSIS_YAW_KP 		1.5//1//0.7//0.4
 #define CHASSIS_YAW_KI		0
 #define CHASSIS_YAW_KD 		0.2//0
 #define CHASSIS_YAW_MIN		0.1
@@ -208,38 +208,38 @@
  */
 /*********************** GIMBAL CONFIGURATION ***********************/
 #define PITCH_ANGLE_KP	  		100
-#define PITCH_ANGLE_KI  		0.1
-#define PITCH_ANGLE_KD  		0
+#define PITCH_ANGLE_KI  		0
+#define PITCH_ANGLE_KD  		5
 #define PITCH_ANGLE_INT_MAX		0.1
-#define PITCH_MAX_RPM			60
+#define PITCH_MAX_RPM			200//60
 
-#define PITCHRPM_KP				5000
+#define PITCHRPM_KP				200
 #define PITCHRPM_KI				0
-#define PITCHRPM_KD				0
+#define PITCHRPM_KD				5
 #define PITCHRPM_INT_MAX		10
 #define PITCH_MAX_CURRENT		20000
 
 #define PITCH_MOTOR_TYPE		TYPE_GM6020
-#define PITCH_CENTER			-2630
+#define PITCH_CENTER			5267
 #define PITCH_MAX_ANG			0.50
 #define PITCH_MIN_ANG			-0.50
 #define PITCH_CONST 			0
 
 
-#define YAW_ANGLE_KP			100
-#define YAW_ANGLE_KI			0
+#define YAW_ANGLE_KP			20
+#define YAW_ANGLE_KI			0.03
 #define YAW_ANGLE_KD			0
 #define YAW_ANGLE_INT_MAX		0.05
 #define YAW_MAX_RPM				85
 #define YAW_SPINSPIN_CONSTANT	5000
 
-#define YAWRPM_KP				150
+#define YAWRPM_KP				100
 #define YAWRPM_KI				0
 #define YAWRPM_KD				0.1
 #define YAWRPM_INT_MAX			200
 #define YAW_MAX_CURRENT			20000
 
-#define YAW_CENTER 				2745//0//2790//7870//
+#define YAW_CENTER 				4814//0//2790//7870//
 #define YAW_MAX_ANG				5*PI
 #define YAW_MIN_ANG				5*-PI
 
@@ -266,7 +266,7 @@
 
 //NOTE: two motors CANNOT have the same __flashing__ number (i.e. GM6020 id 9 cannot be used
 //with any id 6 motors
-#define PITCH_MOTOR_ID 		11 // cannot turn at all
+#define PITCH_MOTOR_ID 		11
 #define PITCH_MOTOR_CAN_PTR	&hcan1
 #ifndef CHASSIS_MCU
 #define YAW_MOTOR_ID 		22
@@ -311,8 +311,8 @@
 #define BR_YAW_MULT			1	//((-BR_DIST * sin(BR_ANG_Y - BR_ANG_PASSIVE - BR_ANG_X)) / (sin(BR_ANG_PASSIVE) * WHEEL_CIRC))
 
 /*********************** OTHERS ***********************/
-#define MINIBOT_CHASSIS_CAP		1500 // Assuming M3508
-#define MINIBOT_GIMBAL_CAP		3000 // Assuming GM6020
+//#define MINIBOT_CHASSIS_CAP		1500 // Assuming M3508
+//#define MINIBOT_GIMBAL_CAP		3000 // Assuming GM6020
 
 #define CONTROL_DELAY 			5
 #define GIMBAL_DELAY			2

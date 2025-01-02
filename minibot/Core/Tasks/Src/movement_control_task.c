@@ -171,14 +171,14 @@ void chassis_motion_control(motor_data_t *motorfr, motor_data_t *motorfl,
 	float trans_scale = 1;
 	trans_scale = fabs(rel_forward) + fabs(rel_horizontal);
 
-	translation_rpm[0] = ((rel_forward * FR_VY_MULT)   //calculate theoretical wheel rpm for chassis translation
-			+ (rel_horizontal * FR_VX_MULT));
-	translation_rpm[1] = ((rel_forward * FL_VY_MULT)
-			+ (rel_horizontal * FL_VX_MULT));
-	translation_rpm[2] = ((rel_forward * BL_VY_MULT)
-			+ (rel_horizontal * BL_VX_MULT));
-	translation_rpm[3] = ((rel_forward * BR_VY_MULT)
-			+ (rel_horizontal * BR_VX_MULT));
+	translation_rpm[0] = ((rel_forward * FR_VY_MULT / sqrt(2))   //calculate theoretical wheel rpm for chassis translation
+			+ (rel_horizontal * FR_VX_MULT / sqrt(2)));
+	translation_rpm[1] = ((rel_forward * FL_VY_MULT / sqrt(2))
+			+ (rel_horizontal * FL_VX_MULT / sqrt(2)));
+	translation_rpm[2] = ((rel_forward * BL_VY_MULT / sqrt(2))
+			+ (rel_horizontal * BL_VX_MULT / sqrt(2)));
+	translation_rpm[3] = ((rel_forward * BR_VY_MULT / sqrt(2))
+			+ (rel_horizontal * BR_VX_MULT / sqrt(2)));
 
 
 	yaw_rpm[0] = rel_yaw * motor_yaw_mult[0] * CHASSIS_YAW_MAX_RPM;  //calculate theoretical wheel rpm for yaw

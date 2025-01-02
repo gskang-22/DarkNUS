@@ -57,7 +57,7 @@ void control_input_task(void *argument) {
 	TickType_t start_time;
 	control_reset();
 	chassis_yaw_pid_init();
-	gimbal_ctrl_data.imu_mode = GIMBAL_MODE; //sk: might have to change to 0
+	gimbal_ctrl_data.imu_mode = 0; //sk: might have to change to 0
 	dbus_remote_start();
 	gear_speed.curr_gear = GEAR_DEFAULT;
 	set_gear();
