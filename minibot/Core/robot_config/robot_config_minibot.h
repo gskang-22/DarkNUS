@@ -211,7 +211,7 @@
 #define PITCH_ANGLE_KI  		0
 #define PITCH_ANGLE_KD  		5
 #define PITCH_ANGLE_INT_MAX		0.1
-#define PITCH_MAX_RPM			200//60
+#define PITCH_MAX_RPM			200
 
 #define PITCHRPM_KP				200
 #define PITCHRPM_KI				0
