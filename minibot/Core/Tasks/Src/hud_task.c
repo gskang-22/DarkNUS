@@ -233,6 +233,56 @@ uint16_t draw_graphic_header(uint8_t* tx_buffer, uint16_t tx_len, uint8_t num_gr
 	return tx_len+sizeof(ref_frame_header_t)+sizeof(ref_inter_robot_data_t);
 }
 
+//TODO: improve or correct Crosshair Drawing code
+//uint16_t draw_crosshair(uint8_t modify, uint8_t* tx_buffer) {
+//    uint32_t curr_pos = 0;
+//    ref_frame_header_t* send_header = (ref_frame_header_t*) tx_buffer;
+//    ref_inter_robot_data_t* graphic_header = (ref_inter_robot_data_t*)(tx_buffer + sizeof(ref_frame_header_t));
+//    graphic_data_struct_t* graphic_data = (graphic_data_struct_t *)(tx_buffer + sizeof(ref_frame_header_t) + sizeof(ref_inter_robot_data_t));
+//
+//    // Prepare the header
+//    send_header->start_frame = 0xA5;
+//    send_header->cmd_id = REF_ROBOT_COMMS_CMD_ID;
+//    send_header->seq = g_ref_tx_seq++;
+//    send_header->data_length = sizeof(ref_inter_robot_data_t) + (2 * sizeof(graphic_data_struct_t)); // 2 lines for the crosshair
+//    append_CRC8_check_sum((uint8_t*)send_header, 5);
+//
+//    // Set up the graphic header
+//    graphic_header->cmd_ID = 0x120; // Arbitrary ID for crosshair
+//    graphic_header->send_ID = ref_robot_data.robot_id;
+//    graphic_header->receiver_ID = g_client_id;
+//
+//    curr_pos += sizeof(ref_frame_header_t) + sizeof(ref_inter_robot_data_t);
+//
+//    // Define horizontal line
+//    graphic_data->graphic_name[0] = 'C';
+//    graphic_data->graphic_name[1] = 'H';
+//    graphic_data->graphic_name[2] = '1';
+//    graphic_data->layer = 2;
+//    graphic_data->color = 5; // Cyan
+//    graphic_data->graphic_operation = modify ? 1 : 0; // Modify or add
+//    graphic_data->width = 2;
+//    graphic_data->start_x = 500; // Example coordinates
+//    graphic_data->start_y = 400;
+//    graphic_data->end_x = 700;
+//    graphic_data->end_y = 400;
+//    memcpy(tx_buffer + curr_pos, graphic_data, sizeof(graphic_data_struct_t));
+//    curr_pos += sizeof(graphic_data_struct_t);
+//
+//    // Define vertical line
+//    graphic_data->graphic_name[0] = 'C';
+//    graphic_data->graphic_name[1] = 'H';
+//    graphic_data->graphic_name[2] = '2';
+//    graphic_data->start_x = 600; // Centered x-coordinate
+//    graphic_data->start_y = 300;
+//    graphic_data->end_x = 600;
+//    graphic_data->end_y = 500;
+//    memcpy(tx_buffer + curr_pos, graphic_data, sizeof(graphic_data_struct_t));
+//    curr_pos += sizeof(graphic_data_struct_t);
+//
+//    return curr_pos;
+//}
+
 
 uint16_t draw_spinspin(uint8_t modify, uint8_t* tx_buffer) {
 	uint32_t curr_pos = 0;
