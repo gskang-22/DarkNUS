@@ -93,7 +93,7 @@ uint16_t check_overheat() {
 	// 0: overheated
 	// >0: system not overheated
 
-	return ref_power_data.shooter_17mm_1_barrel_heat;
+	return ref_power_data.shooter_17mm_1_barrel_heat < ref_robot_data.shooter_barrel_heat_limit;
 //	return (float)ref_power_data.shooter_17mm_1_barrel_heat / ref_robot_data.shooter_barrel_heat_limit;
 //	return 1;
 #endif

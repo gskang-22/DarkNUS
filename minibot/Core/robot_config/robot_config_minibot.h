@@ -134,7 +134,7 @@
  */
 
 /*********************** LAUNCHER CONFIGURATION ***********************/
-#define FEEDER_KP 			5			// |
+#define FEEDER_KP 			50			// |
 #define FEEDER_KI  			0.02				// | - FEEDER PID VALUES
 #define FEEDER_KD  			3			// |
 #define FEEDER_MAX_INT		10000
@@ -149,7 +149,7 @@
 #define FEEDER_UNJAM_SPD  		-500				//Reverse unjam
 #define FEEDER_UNJAM_TIME		50
 #define FEEDER_MAX_CURRENT		10000
-#define FEEDER_INVERT			1
+#define FEEDER_INVERT			-1
 #define FEEDER_CUTOFF_TEMP  	60
 
 //#define ANGLE_FEEDER
@@ -174,9 +174,9 @@
 #define CLEAR_DELAY				1000
 
 /*********************** CHASSIS CONFIGURATION ***********************/
-#define CHASSIS_KP  		1.5		// |
-#define CHASSIS_KI  		0.01		// | - CHASSIS WHEELS PID VALUES
-#define CHASSIS_KD  		0			// |
+#define CHASSIS_KP  		1		// |
+#define CHASSIS_KI  		0		// | - CHASSIS WHEELS PID VALUES
+#define CHASSIS_KD  		1			// |
 #define CHASSIS_INT_MAX  	1000				// |
 #define CHASSIS_MAX_CURRENT 6000//9000
 #define CHASSIS_MIN_CURRENT 0
@@ -220,9 +220,9 @@
 #define PITCH_MAX_CURRENT		20000
 
 #define PITCH_MOTOR_TYPE		TYPE_GM6020
-#define PITCH_CENTER			5267
-#define PITCH_MAX_ANG			0.50
-#define PITCH_MIN_ANG			-0.50
+#define PITCH_CENTER			7900
+#define PITCH_MAX_ANG			0.2//0.5
+#define PITCH_MIN_ANG			-0.15//-0.5
 #define PITCH_CONST 			0
 
 
@@ -239,7 +239,7 @@
 #define YAWRPM_INT_MAX			200
 #define YAW_MAX_CURRENT			20000
 
-#define YAW_CENTER 				4814//0//2790//7870//
+#define YAW_CENTER 				4700//0//2790//7870//
 #define YAW_MAX_ANG				5*PI
 #define YAW_MIN_ANG				5*-PI
 
