@@ -208,23 +208,22 @@
  */
 /*********************** GIMBAL CONFIGURATION ***********************/
 #define PITCH_ANGLE_KP	  		100
-#define PITCH_ANGLE_KI  		0
+#define PITCH_ANGLE_KI  		0.5
 #define PITCH_ANGLE_KD  		5
 #define PITCH_ANGLE_INT_MAX		0.1
 #define PITCH_MAX_RPM			200
 
-#define PITCHRPM_KP				200
+#define PITCHRPM_KP				175
 #define PITCHRPM_KI				0
-#define PITCHRPM_KD				5
+#define PITCHRPM_KD				10
 #define PITCHRPM_INT_MAX		10
 #define PITCH_MAX_CURRENT		20000
 
 #define PITCH_MOTOR_TYPE		TYPE_GM6020
 #define PITCH_CENTER			7900
-#define PITCH_MAX_ANG			0.2//0.5
+#define PITCH_MAX_ANG			0.45//0.5
 #define PITCH_MIN_ANG			-0.15//-0.5
-#define PITCH_CONST 			0
-
+#define PITCH_CONST 			-3500
 
 #define YAW_ANGLE_KP			20
 #define YAW_ANGLE_KI			0.03

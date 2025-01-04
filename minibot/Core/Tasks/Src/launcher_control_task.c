@@ -46,6 +46,7 @@ static uint32_t prev_power_data_no = 0;
 
 
 enum feeder_state_e feeder_state;
+static enum feeder_state_e *feed_state = &feeder_state;
 
 void launcher_control_task(void *argument) {
 	TickType_t launcher_ctrl_time;
