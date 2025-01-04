@@ -165,6 +165,7 @@ void flywheel_control(motor_data_t *l_flywheel, motor_data_t *r_flywheel) {
 				r_flywheel->raw_data.rpm, &r_flywheel->rpm_pid);
 		l_flywheel->output = l_flywheel->rpm_pid.output;
 		r_flywheel->output = r_flywheel->rpm_pid.output;
+
 		break;
 
 	default:
@@ -181,7 +182,7 @@ void launcher_control(motor_data_t *l_flywheel, motor_data_t *r_flywheel,
 		motor_data_t *feeder) {
 
 	static uint32_t jam_start_time = 0;
-
+	enum feeder_state_e x = feeder_state;
 	int16_t feeder_speed = launcher_ctrl_data.firing
 			* g_referee_limiters.feeding_speed * FEEDER_INVERT
 			/ FEEDER_SPEED_RATIO;
@@ -196,20 +197,27 @@ void launcher_control(motor_data_t *l_flywheel, motor_data_t *r_flywheel,
 	 * Finite state machine for feeder
 	 */
 	switch (feeder_state) {
+
 	case FEEDER_STANDBY:
+
 		if (launcher_ctrl_data.firing != 0) {
 			feeder_state = FEEDER_SPINUP;
 		}
+
 		break;
+
 	case FEEDER_SPINUP:
+
 		if (abs(avg_rpm - friction_wheel_speed) < LAUNCHER_MARGIN) {
 			if (rpm_diff < LAUNCHER_DIFF_MARGIN) {
 				feeder_state = FEEDER_FIRING;
 			}
 		}
+
 		break;
 
 	case FEEDER_FIRING:
+
 		//check for feeder jam first, prioritise unjamming
 		if ((feeder->raw_data.torque)
 				> (FEEDER_JAM_TORQUE * FEEDER_INVERT) && (abs(feeder->raw_data.rpm) < FEEDER_JAM_RPM)) {
@@ -237,9 +245,11 @@ void launcher_control(motor_data_t *l_flywheel, motor_data_t *r_flywheel,
 			}
 		}
 		//else stay firing
+
 		break;
 
 	case FEEDER_JAM:
+
 		//check if either after unjam time
 		if ((HAL_GetTick() - jam_start_time) > FEEDER_UNJAM_TIME) {
 			feeder_state = FEEDER_SPINUP;
@@ -252,6 +262,7 @@ void launcher_control(motor_data_t *l_flywheel, motor_data_t *r_flywheel,
 		break;
 
 	case FEEDER_OVERHEAT:
+
 		if (check_overheat() > OVERHEAT_EXCESS) {
 			if (launcher_ctrl_data.firing != 0) {
 				feeder_state = FEEDER_SPINUP;
@@ -262,25 +273,30 @@ void launcher_control(motor_data_t *l_flywheel, motor_data_t *r_flywheel,
 		break;
 
 	default:
+
 		feeder_state = FEEDER_STANDBY;
 	}
 
 	switch (feeder_state) {
+
 	case FEEDER_STANDBY:
 	case FEEDER_SPINUP:
 	case FEEDER_OVERHEAT:
+
 		speed_pid(0, feeder->raw_data.rpm, &feeder->rpm_pid);
 		feeder->output = feeder->rpm_pid.output;
 //		feeder->output = 0;
 		break;
 
 	case FEEDER_FIRING:
+
 		speed_pid(feeder_speed * feeder->angle_data.gearbox_ratio,
 				feeder->raw_data.rpm, &feeder->rpm_pid);
 		feeder->output = feeder->rpm_pid.output;
 		break;
 
 	case FEEDER_JAM:
+
 		speed_pid(
 				FEEDER_UNJAM_SPD * feeder->angle_data.gearbox_ratio
 						* FEEDER_INVERT, feeder->raw_data.rpm,
@@ -289,6 +305,7 @@ void launcher_control(motor_data_t *l_flywheel, motor_data_t *r_flywheel,
 		break;
 
 	default:
+
 		feeder->output = 0;
 	}
 

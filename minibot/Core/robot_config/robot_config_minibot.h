@@ -134,7 +134,7 @@
  */
 
 /*********************** LAUNCHER CONFIGURATION ***********************/
-#define FEEDER_KP 			50			// |
+#define FEEDER_KP 			50			// might have to increase
 #define FEEDER_KI  			0.02				// | - FEEDER PID VALUES
 #define FEEDER_KD  			3			// |
 #define FEEDER_MAX_INT		10000
@@ -149,7 +149,7 @@
 #define FEEDER_UNJAM_SPD  		-500				//Reverse unjam
 #define FEEDER_UNJAM_TIME		50
 #define FEEDER_MAX_CURRENT		10000
-#define FEEDER_INVERT			-1
+#define FEEDER_INVERT			1
 #define FEEDER_CUTOFF_TEMP  	60
 
 //#define ANGLE_FEEDER
@@ -160,12 +160,12 @@
 
 #define STEPPER_ANGLE			1.8
 #define FRICTION_SB_SPIN		0//LV1_PROJECTILE * PROJECTILE_SPEED_RATIO//6000
-#define FRICTION_KP  			5				    // |
-#define FRICTION_KI  			0//0.02			// | - FRICTION WHEELS PID VALUES
-#define FRICTION_KD  			0//10				// |
+#define FRICTION_KP  			75				    // |
+#define FRICTION_KI  			0.02			// | - FRICTION WHEELS PID VALUES
+#define FRICTION_KD  			10				// |
 #define FRICTION_MAX_CURRENT 	16384
 #define FRICTION_MAX_INT		10000
-#define FRICTION_INVERT			-1
+#define FRICTION_INVERT			1
 #define LAUNCHER_MARGIN			300
 #define LAUNCHER_DIFF_MARGIN	300
 #define FRICTION_OFFSET			0//100
@@ -207,34 +207,34 @@
  * the motors
  */
 /*********************** GIMBAL CONFIGURATION ***********************/
-#define PITCH_ANGLE_KP	  		100
-#define PITCH_ANGLE_KI  		0.5
-#define PITCH_ANGLE_KD  		5
+#define PITCH_ANGLE_KP	  		90
+#define PITCH_ANGLE_KI  		0
+#define PITCH_ANGLE_KD  		250
 #define PITCH_ANGLE_INT_MAX		0.1
 #define PITCH_MAX_RPM			200
 
-#define PITCHRPM_KP				175
+#define PITCHRPM_KP				80
 #define PITCHRPM_KI				0
-#define PITCHRPM_KD				10
+#define PITCHRPM_KD				200
 #define PITCHRPM_INT_MAX		10
 #define PITCH_MAX_CURRENT		20000
 
 #define PITCH_MOTOR_TYPE		TYPE_GM6020
 #define PITCH_CENTER			7900
-#define PITCH_MAX_ANG			0.45//0.5
+#define PITCH_MAX_ANG			0.45//0.5 //limits the pitch max and min angles
 #define PITCH_MIN_ANG			-0.15//-0.5
-#define PITCH_CONST 			-3500
+#define PITCH_CONST 			-8500 // constant torque to keep gimbal upright somewhat
 
-#define YAW_ANGLE_KP			20
-#define YAW_ANGLE_KI			0.03
-#define YAW_ANGLE_KD			0
+#define YAW_ANGLE_KP			125
+#define YAW_ANGLE_KI			0.01
+#define YAW_ANGLE_KD			5
 #define YAW_ANGLE_INT_MAX		0.05
 #define YAW_MAX_RPM				85
 #define YAW_SPINSPIN_CONSTANT	5000
 
-#define YAWRPM_KP				100
-#define YAWRPM_KI				0
-#define YAWRPM_KD				0.1
+#define YAWRPM_KP				175
+#define YAWRPM_KI				0.01
+#define YAWRPM_KD				5
 #define YAWRPM_INT_MAX			200
 #define YAW_MAX_CURRENT			20000
 
