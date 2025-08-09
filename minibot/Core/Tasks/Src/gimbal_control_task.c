@@ -44,18 +44,6 @@ static pid_data_t g_yaw_ff_pid = {
 static float g_chassis_rot;
 float curr_rot;
 
-
-float calc_chassis_rot(motor_data_t *flmotor, motor_data_t *frmotor,
-		motor_data_t *brmotor, motor_data_t *blmotor) {
-//	curr_rot = (float)flmotor->raw_data.rpm;
-//	curr_rot += frmotor->raw_data.rpm;
-//			curr_rot -= brmotor->raw_data.rpm;
-//			curr_rot += blmotor->raw_data.rpm;
-	curr_rot = chassis_rpm * chassis_ctrl_data.yaw;
-	g_chassis_rot = (curr_rot * WHEEL_RADIUS )/ (CHASSIS_RADIUS * M3508_GEARBOX_RATIO * 4);
-	return g_chassis_rot;
-}
-
 uint8_t check_yaw(){
 	if (get_microseconds()- g_can_motors[YAW_MOTOR_ID-1].last_time[0] < 1000){
 		return 1;
@@ -73,24 +61,10 @@ uint8_t check_yaw(){
 void gimbal_control_task(void *argument) {
 	TickType_t start_time;
 	while (1) {
-#if PITCH_MOTOR_TYPE >= TYPE_LK_MG5010E_SPD
-		lk_read_motor_sang(&g_pitch_motor);
-#endif
 		xEventGroupWaitBits(gimbal_event_group, 0b11, pdTRUE, pdFALSE,
 		portMAX_DELAY);
 		start_time = xTaskGetTickCount();
 		if (gimbal_ctrl_data.enabled) {
-			calc_chassis_rot(&g_can_motors[FL_MOTOR_ID - 1],
-					&g_can_motors[FR_MOTOR_ID - 1],
-					&g_can_motors[BR_MOTOR_ID - 1],
-					&g_can_motors[BL_MOTOR_ID - 1]);
-#ifdef HALL_ZERO
-			if (check_yaw()){
-				g_gimbal_state = 1;
-			}
-#endif
-
-
 			if (gimbal_ctrl_data.imu_mode) {
 				gimbal_control(&g_pitch_motor,
 						g_can_motors + YAW_MOTOR_ID - 1);
@@ -124,9 +98,6 @@ void gimbal_control(motor_data_t *pitch_motor, motor_data_t *yaw_motor) {
 	if (prev_yaw == imu_heading.yaw || prev_pit == imu_heading.pit) {
 		return;}
 
-#ifndef PITCH_ARM			// for robots that do not have a 4 bar linkage on the pitch motor to the pitch assembly
-//	float rel_pitch_angle = pitch_motor->angle_data.adj_ang
-//			+ gimbal_ctrl_data.pitch - imu_heading.pit;
 	rel_pitch_angle = pitch_motor->angle_data.adj_ang
 				+ gimbal_ctrl_data.pitch - imu_heading.pit;
 	if (rel_pitch_angle > pitch_motor->angle_data.phy_max_ang) {
@@ -156,41 +127,6 @@ void gimbal_control(motor_data_t *pitch_motor, motor_data_t *yaw_motor) {
 #endif
 
 	pitch_motor->output = temp_pit_output;
-
-#else
-	float rel_pitch_angle = gimbal_ctrl_data.pitch; // insert function where input desired gimbal pitch angle and output corresponding motor angle
-
-	if (rel_pitch_angle > pitch_motor->angle_data.phy_max_ang) {
-		rel_pitch_angle = pitch_motor->angle_data.phy_max_ang;
-		pit_lim = 1;
-	}
-	if (rel_pitch_angle < pitch_motor->angle_data.phy_min_ang) {
-		rel_pitch_angle = pitch_motor->angle_data.phy_min_ang;
-		pit_lim = 1;
-	}
-	if (pit_lim == 1) {
-		gimbal_ctrl_data.pitch = rel_pitch_angle;
-	}
-#if PITCH_MOTOR_TYPE < TYPE_LK_MG5010E_SPD	//check if motor is LK or DJI
-
-	angle_pid(rel_pitch_angle, pitch_motor->angle_data.adj_ang, pitch_motor);
-
-#else
-	//lazy max
-	//covnert radians back to degrees
-	int32_t pitch_ang = rel_pitch_angle * 57320;
-	g_pitch_motor.output = pitch_ang;
-	if (HAL_CAN_GetTxMailboxesFreeLevel(g_pitch_motor.can) == 0){
-//		HAL_CAN_AbortTxRequest(&hcan1, CAN_TX_MAILBOX0 | CAN_TX_MAILBOX1 | CAN_TX_MAILBOX2);
-		vTaskDelay(1);
-	}
-	lk_motor_multturn_ang(&g_pitch_motor);
-#endif
-#endif
-
-//#ifdef PITCH_MOTOR_INVERT
-//	pitch_motor->rpm_pid.output *=-1;
-//#endif
 
 	float rel_yaw_angle = yaw_motor->angle_data.adj_ang + gimbal_ctrl_data.yaw
 			- imu_heading.yaw;
@@ -228,15 +164,7 @@ void gimbal_control(motor_data_t *pitch_motor, motor_data_t *yaw_motor) {
 			imu_heading.yaw, &prev_yaw,0);
 	xSemaphoreGive(gimbal_ctrl_data.yaw_semaphore);
 
-//	yangle_pid(gimbal_ctrl_data.yaw, imu_heading.yaw, yaw_motor,
-//			imu_heading.yaw, &prev_yaw);
-//		oangle_pid(gimbal_ctrl_data.yaw, imu_heading.yaw, yaw_motor, g_chassis_rot);
-
-
-//	float chassis_yaw_speed = g_chassis_yaw * FR_DIST * 2 * PI * chassis_rpm / 19.2;
-//	pitch_motor->output = pitch_motor->rpm_pid.output;
-//	yaw_motor->output = yaw_motor->rpm_pid.output;
-	int32_t temp_output = yaw_motor->rpm_pid.output  + (chassis_ctrl_data.yaw * YAW_SPINSPIN_CONSTANT/CHASSIS_SPINSPIN_MAX);
+	int32_t temp_output = yaw_motor->rpm_pid.output  + (chassis_ctrl_data.yaw * YAW_SPINSPIN_CONSTANT);
 #ifdef MINIBOT_GIMBAL_CAP
 	temp_output = (temp_output < -MINIBOT_GIMBAL_CAP) ? -MINIBOT_GIMBAL_CAP :
 						(temp_output > MINIBOT_GIMBAL_CAP) ? MINIBOT_GIMBAL_CAP : temp_output;

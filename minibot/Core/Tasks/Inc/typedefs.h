@@ -327,14 +327,6 @@ typedef struct {
 	uint8_t frame_ender;
 }sbc_raw_t;
 
-typedef struct{
-	uint8_t curr_gear;
-	float spin_mult;
-	float trans_mult;
-	float accel_mult;
-}speed_shift_t;
-
-
 enum motor_params
 {
 	rpm_kp		= 1,

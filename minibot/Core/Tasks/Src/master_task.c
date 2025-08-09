@@ -95,10 +95,13 @@ void master_task(void* argument){
 	xTaskCreate(control_input_task, "RC_task",
 	configMINIMAL_STACK_SIZE, (void*) 1, (UBaseType_t) 4,
 			&control_input_task_handle);
+
 	xTaskCreate(referee_processing_task, "referee_task", 512, (void*) 1,
 			(UBaseType_t) 2, &referee_processing_task_handle);
+
 	xTaskCreate(buzzing_task, "buzzer_task",
 	configMINIMAL_STACK_SIZE, (void*) 1, (UBaseType_t) 1, &buzzing_task_handle);
+
 	if (usb_continue_semaphore == NULL) {
 		//error handler
 	} else {
@@ -106,12 +109,13 @@ void master_task(void* argument){
 		configMINIMAL_STACK_SIZE, (void*) 1, (UBaseType_t) 1, &usb_task_handle);
 	}
 
-//	xTaskCreate(telemetry_task, "telemetry_task", 700, (void*) 1,
-//			(UBaseType_t) 5, &telemetry_task_handle);
+	//	xTaskCreate(telemetry_task, "telemetry_task", 700, (void*) 1,
+	//			(UBaseType_t) 5, &telemetry_task_handle);
+
 	xTaskCreate(hud_task, "hud_task", 512, (void*) 3,
 			(UBaseType_t) 5, &hud_task_handle);
 
-
+	
 //	vTaskDelete(master_task_handle);
 	while(1){
 		vTaskDelay(1000);

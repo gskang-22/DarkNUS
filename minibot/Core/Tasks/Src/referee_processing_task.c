@@ -62,8 +62,8 @@ void HAL_UART_AbortCpltCallback(UART_HandleTypeDef *huart){
 void referee_processing_task(void *argument) {
 	g_referee_limiters.robot_level = 0;
 	ref_processing_status_t proc_status;
-	g_referee_limiters.feeding_speed = LV1_FEEDER;
-	g_referee_limiters.projectile_speed = LV1_PROJECTILE;
+	g_referee_limiters.feeding_speed = FEEDER_SPEED;
+	g_referee_limiters.projectile_speed = PROJECTILE_SPEED;
 //	g_referee_limiters.wheel_power_limit = LV1_POWER;
 	g_referee_limiters.robot_level = 1;
 	status_led(7, on_led);
@@ -140,28 +140,6 @@ void referee_processing_task(void *argument) {
 
 
 		status_led(5, on_led);
-		if (ref_robot_data.robot_level == 1) {
-			g_referee_limiters.feeding_speed = LV1_FEEDER;
-			g_referee_limiters.projectile_speed = LV1_PROJECTILE;
-			g_referee_limiters.robot_level = 1;
-			status_led(7, on_led);
-			status_led(8, off_led);
-		} else if (ref_robot_data.robot_level == 2) {
-			g_referee_limiters.feeding_speed = LV2_FEEDER;
-			g_referee_limiters.projectile_speed = LV2_PROJECTILE;
-			g_referee_limiters.robot_level = 2;
-			status_led(7, off_led);
-			status_led(8, on_led);
-		} else if (ref_robot_data.robot_level == 3) {
-			g_referee_limiters.feeding_speed = LV3_FEEDER;
-			g_referee_limiters.projectile_speed = LV3_PROJECTILE;
-			g_referee_limiters.robot_level = 3;
-			status_led(7, on_led);
-			status_led(8, on_led);
-		} else {
-			g_referee_limiters.feeding_speed = LV1_FEEDER;
-			g_referee_limiters.projectile_speed = LV1_PROJECTILE;
-		}
 		if (ref_robot_data.robot_level != 0) {
 			static uint32_t prev_power_tx_no = 0;
 			if (prev_power_tx_no != ref_power_data_txno){

@@ -20,7 +20,6 @@ void control_mode_change(int16_t left_dial_input);
 void gimbal_turn_ang(float pit_radians, float yaw_radians);
 //SETs angle to gimbal ctrl
 void gimbal_set_ang(float pit_radians, float yaw_radians);
-void set_gear();
 void chassis_yaw_pid_init();
 void aimbot_pid_init();
 void dbus_reset();

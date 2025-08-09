@@ -32,4 +32,7 @@
 #define GRAPHIC_COLOUR_BLACK		7
 #define GRAPHIC_COLOUR_WHITE		8
 
+#define HUD_MAX_X 1920
+#define HUD_MAX_Y 1080
+
 #endif /* ROBOT_CONFIG_HUD_CONSTANTS_H_ */

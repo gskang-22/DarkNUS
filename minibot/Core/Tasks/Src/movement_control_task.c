@@ -22,7 +22,6 @@ extern motor_data_t g_can_motors[24];
 extern referee_limit_t g_referee_limiters;
 extern ref_game_robot_data_t ref_robot_data;
 extern uint32_t ref_power_data_txno;
-extern speed_shift_t gear_speed;
 float g_chassis_yaw = 0;
 int32_t chassis_rpm = MAX_SPEED;
 extern uint8_t g_gimbal_state;
@@ -54,10 +53,10 @@ void movement_control_task(void *argument) {
 			start_time = xTaskGetTickCount();
 			if (chassis_ctrl_data.enabled) {
 
-					chassis_motion_control(g_can_motors + FR_MOTOR_ID - 1,
-							g_can_motors + FL_MOTOR_ID - 1,
-							g_can_motors + BL_MOTOR_ID - 1,
-							g_can_motors + BR_MOTOR_ID - 1);
+				chassis_motion_control(g_can_motors + FR_MOTOR_ID - 1,
+						g_can_motors + FL_MOTOR_ID - 1,
+						g_can_motors + BL_MOTOR_ID - 1,
+						g_can_motors + BR_MOTOR_ID - 1);
 			} else {
 				g_can_motors[FR_MOTOR_ID - 1].output = 0;
 				g_can_motors[FL_MOTOR_ID - 1].output = 0;
@@ -86,8 +85,7 @@ void movement_control_task(void *argument) {
 void chassis_MCU_send_CAN() {
 
 }
-static uint32_t chassis_rpm_max = MAX_SPEED;//LV1_MAX_SPEED;
-
+static uint32_t chassis_rpm_max = MAX_SPEED; //LV1_MAX_SPEED;
 
 float filtered_rpm_fr;
 float filtered_rpm_fl;
@@ -106,39 +104,40 @@ void chassis_motion_control(motor_data_t *motorfr, motor_data_t *motorfl,
 	float yaw_rpm[4] = { 0, };
 	float total_power = 0;
 	static int32_t chassis_current = CHASSIS_MAX_CURRENT;
-	static prev_drive_mag;
+	static int32_t prev_drive_mag;
 
 	int32_t curr_avg_rpm = (abs(motorfr->raw_data.rpm)
 			+ abs(motorfl->raw_data.rpm) + abs(motorbr->raw_data.rpm)
 			+ abs(motorbl->raw_data.rpm)) / 4;
+
 #ifdef REF_POWER_LIM
-	static uint32_t prev_tx_no =0 ;
-	if (ref_power_data_txno != prev_tx_no){
+	static uint32_t prev_tx_no = 0;
+	if (ref_power_data_txno != prev_tx_no) {
 		prev_tx_no = ref_power_data_txno;
 		float avg_power;
 		avg_power = (float) curr_avg_rpm / prev_drive_mag; // estimate power based on wheel rpm change?
 		avg_power = avg_power * avg_power;		//square the avg power
-		float power_diff = fabs(avg_power - g_referee_limiters.wheel_power_limit); // difference between robot average power and % of game limit power used
-		if (power_diff > 0.2 ) { 						// if power difference>0.2, decrease power. if power diff<0.2, increase power
+		float power_diff = fabs(
+				avg_power - g_referee_limiters.wheel_power_limit); // difference between robot average power and % of game limit power used
+		if (power_diff > 0.2) { // if power difference>0.2, decrease power. if power diff<0.2, increase power
 			float power_err = (g_referee_limiters.wheel_power_limit - avg_power);
 			power_err = power_err * CHASSIS_POWER_KP;
-			if (power_err > CHASSIS_POWER_DELTA_LIM){ // limits max change to CHASSIS_POWER_DELTA_LIM
+			if (power_err > CHASSIS_POWER_DELTA_LIM) { // limits max change to CHASSIS_POWER_DELTA_LIM
 				power_err = CHASSIS_POWER_DELTA_LIM;
-			} else if (power_err < -CHASSIS_POWER_DELTA_LIM){
+			} else if (power_err < -CHASSIS_POWER_DELTA_LIM) {
 				power_err = -CHASSIS_POWER_DELTA_LIM;
 			}
-//			uint32_t lvl_max_speed = (ref_robot_data.robot_level == 2) ? LV2_MAX_SPEED : (ref_robot_data.robot_level == 3) ? LV3_MAX_SPEED : LV1_MAX_SPEED;
-//			chassis_rpm_max = chassis_rpm_max - (chassis_rpm_max * power_err);
-			uint32_t lvl_max_speed;
+			uint32_t lvl_max_speed = LVL_MAX_SPEED;
 
-			lvl_max_speed = (ref_robot_data.robot_level == 2) ? LV2_MAX_SPEED : (ref_robot_data.robot_level == 3) ? LV3_MAX_SPEED : LV1_MAX_SPEED;
 			chassis_rpm_max = chassis_rpm_max - (chassis_rpm_max * power_err); // increase or decrease chassis_rpm_max by power err
 
-			chassis_rpm_max = (chassis_rpm_max < MIN_SPEED) ? MIN_SPEED :
-								(chassis_rpm_max > lvl_max_speed) ? lvl_max_speed : chassis_rpm_max;
+			chassis_rpm_max =
+					(chassis_rpm_max < MIN_SPEED) ? MIN_SPEED :
+					(chassis_rpm_max > lvl_max_speed) ?
+							lvl_max_speed : chassis_rpm_max;
 
 		}
-	#ifdef CHASSIS_POWER_BUFFER_LIMITER
+#ifdef CHASSIS_POWER_BUFFER_LIMITER
 		if (g_spinspin_mode == 1) {  // for messing with motor current while spinning as needed
 			chassis_current = CHASSIS_MAX_CURRENT* g_referee_limiters.wheel_buffer_limit; // multiply max motor pid output (effectively motor current) by multiplier from remaining buffer
 		} else {
@@ -146,7 +145,7 @@ void chassis_motion_control(motor_data_t *motorfr, motor_data_t *motorfl,
 		}
 	#else
 		chassis_current = CHASSIS_MAX_CURRENT;
-	#endif
+#endif
 	}
 #endif
 
@@ -157,22 +156,14 @@ void chassis_motion_control(motor_data_t *motorfr, motor_data_t *motorfl,
 	//rotate angle of the movement :)
 	//MA1513/MA1508E is useful!!
 
-	float act_forward = chassis_ctrl_data.forward * gear_speed.trans_mult;  //gear shifter multipliers
-	float act_horizontal = chassis_ctrl_data.horizontal * gear_speed.trans_mult;
-	float act_yaw = chassis_ctrl_data.yaw * gear_speed.spin_mult;
+	float rel_forward = ((-chassis_ctrl_data.horizontal * sin(-rel_angle)) //translation and rotation speed of chassis for chassis yaw angle relative to gimbal
+	+ (chassis_ctrl_data.forward * cos(-rel_angle)));
+	float rel_horizontal = ((-chassis_ctrl_data.horizontal * cos(-rel_angle))
+			+ (chassis_ctrl_data.forward * -sin(-rel_angle)));
+	float rel_yaw = chassis_ctrl_data.yaw;
 
-
-	float rel_forward = ((-act_horizontal * sin(-rel_angle))  //translation and rotation speed of chassis for chassis yaw angle relative to gimbal
-			+ (act_forward * cos(-rel_angle)));
-	float rel_horizontal = ((-act_horizontal * cos(-rel_angle))
-			+ (act_forward * -sin(-rel_angle)));
-	float rel_yaw = act_yaw;
-
-	float trans_scale = 1;
-	trans_scale = fabs(rel_forward) + fabs(rel_horizontal);
-
-	translation_rpm[0] = ((rel_forward * FR_VY_MULT)   //calculate theoretical wheel rpm for chassis translation
-			+ (rel_horizontal * FR_VX_MULT));
+	translation_rpm[0] = ((rel_forward * FR_VY_MULT) //calculate theoretical wheel rpm for chassis translation
+	+ (rel_horizontal * FR_VX_MULT));
 	translation_rpm[1] = ((rel_forward * FL_VY_MULT)
 			+ (rel_horizontal * FL_VX_MULT));
 	translation_rpm[2] = ((rel_forward * BL_VY_MULT)
@@ -180,8 +171,7 @@ void chassis_motion_control(motor_data_t *motorfr, motor_data_t *motorfl,
 	translation_rpm[3] = ((rel_forward * BR_VY_MULT)
 			+ (rel_horizontal * BR_VX_MULT));
 
-
-	yaw_rpm[0] = rel_yaw * motor_yaw_mult[0] * CHASSIS_YAW_MAX_RPM;  //calculate theoretical wheel rpm for yaw
+	yaw_rpm[0] = rel_yaw * motor_yaw_mult[0] * CHASSIS_YAW_MAX_RPM; //calculate theoretical wheel rpm for yaw
 	yaw_rpm[1] = rel_yaw * motor_yaw_mult[1] * CHASSIS_YAW_MAX_RPM;
 	yaw_rpm[2] = rel_yaw * motor_yaw_mult[2] * CHASSIS_YAW_MAX_RPM;
 	yaw_rpm[3] = rel_yaw * motor_yaw_mult[3] * CHASSIS_YAW_MAX_RPM;
@@ -191,7 +181,7 @@ void chassis_motion_control(motor_data_t *motorfr, motor_data_t *motorfl,
 	for (uint8_t i = 0; i < 4; i++) {
 		float temp_add = fabs(yaw_rpm[i] + translation_rpm[i]);
 		rpm_sum = rpm_sum + temp_add;  //get sum of wheel rpm
-		if (temp_add > rpm_mult){	   //get highest wheel rpm
+		if (temp_add > rpm_mult) {	   //get highest wheel rpm
 			rpm_mult = temp_add;
 		}
 	}
@@ -199,17 +189,17 @@ void chassis_motion_control(motor_data_t *motorfr, motor_data_t *motorfl,
 	int32_t avg_trans = 0;
 	for (uint8_t j = 0; j < 4; j++) {
 		if (g_spinspin_mode == 1) { // if spinning
-			translation_rpm[j] = (translation_rpm[j]							// sum theoretical wheel rpm for translation and yaw
-									+ yaw_rpm[j]) * chassis_rpm / (rpm_sum/4);  // for spinning modulate wheel rpm by dividing by average rpm
+			translation_rpm[j] = (translation_rpm[j]// sum theoretical wheel rpm for translation and yaw
+			+ yaw_rpm[j]) * chassis_rpm / (rpm_sum / 4); // for spinning modulate wheel rpm by dividing by average rpm
 			avg_trans += fabs(translation_rpm[j]);
 		} else {
-			translation_rpm[j] = (translation_rpm[j]							// sum theoretical wheel rpm for translation and yaw
-						+ yaw_rpm[j]) * chassis_rpm / rpm_mult;					// for no spinning modulate wheel rpm by dividing by highest rpm
+			translation_rpm[j] = (translation_rpm[j]// sum theoretical wheel rpm for translation and yaw
+			+ yaw_rpm[j]) * chassis_rpm / rpm_mult;	// for no spinning modulate wheel rpm by dividing by highest rpm
 			avg_trans += fabs(translation_rpm[j]);
 		}
 
 	}
-	prev_drive_mag = avg_trans/4;
+	prev_drive_mag = avg_trans / 4;
 
 	motorfr->rpm_pid.max_out = chassis_max_curr;
 	motorfl->rpm_pid.max_out = chassis_max_curr;
@@ -228,19 +218,25 @@ void chassis_motion_control(motor_data_t *motorfr, motor_data_t *motorfl,
 #ifdef MINIBOT_CHASSIS_CAP
 	// Scaling down output values to be below limit
 	float max_rpm = fabs(motorfr->rpm_pid.output);
-	max_rpm = (fabs(motorfl->rpm_pid.output) > max_rpm) ? fabs(motorfl->rpm_pid.output) : max_rpm;
-	max_rpm = (fabs(motorbl->rpm_pid.output) > max_rpm) ? fabs(motorbl->rpm_pid.output) : max_rpm;
-	max_rpm = (fabs(motorbr->rpm_pid.output) > max_rpm) ? fabs(motorbr->rpm_pid.output) : max_rpm;
+	max_rpm =
+			(fabs(motorfl->rpm_pid.output) > max_rpm) ?
+					fabs(motorfl->rpm_pid.output) : max_rpm;
+	max_rpm =
+			(fabs(motorbl->rpm_pid.output) > max_rpm) ?
+					fabs(motorbl->rpm_pid.output) : max_rpm;
+	max_rpm =
+			(fabs(motorbr->rpm_pid.output) > max_rpm) ?
+					fabs(motorbr->rpm_pid.output) : max_rpm;
 
 	float divisor = 1.0;
 	if (max_rpm > MINIBOT_CHASSIS_CAP) {
 		divisor = max_rpm / MINIBOT_CHASSIS_CAP;
 	}
 
-	motorfr->output = motorfr->rpm_pid.output/divisor;
-	motorfl->output = motorfl->rpm_pid.output/divisor;
-	motorbl->output = motorbl->rpm_pid.output/divisor;
-	motorbr->output = motorbr->rpm_pid.output/divisor;
+	motorfr->output = motorfr->rpm_pid.output / divisor;
+	motorfl->output = motorfl->rpm_pid.output / divisor;
+	motorbl->output = motorbl->rpm_pid.output / divisor;
+	motorbr->output = motorbr->rpm_pid.output / divisor;
 
 #else
 	motorfr->output = motorfr->rpm_pid.output;

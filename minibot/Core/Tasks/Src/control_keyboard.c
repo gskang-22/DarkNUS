@@ -32,34 +32,6 @@ void keyboard_control_input() {
 	mouse_launcher_control_input();
 }
 
-void keyboard_gear_shifter(speed_shift_t *gear_speed) {
-	static uint32_t shift_press_time;
-	static uint32_t ctrl_press_time;
-	if ((g_remote_cmd.keyboard_keys & KEY_OFFSET_SHIFT)
-			&& (g_remote_cmd.keyboard_keys & KEY_OFFSET_CTRL)) {
-		gear_speed->curr_gear = 3;
-		shift_press_time = HAL_GetTick();
-		ctrl_press_time = HAL_GetTick();
-	}
-
-	else if (g_remote_cmd.keyboard_keys & KEY_OFFSET_SHIFT) {
-		if (HAL_GetTick() - shift_press_time > 100) {
-			gear_speed->curr_gear =
-					(gear_speed->curr_gear < 5) ? gear_speed->curr_gear + 1 : 5;
-		}
-		shift_press_time = HAL_GetTick();
-	}
-
-	else if (g_remote_cmd.keyboard_keys & KEY_OFFSET_CTRL) {
-		if (HAL_GetTick() - ctrl_press_time > 100) {
-			gear_speed->curr_gear =
-					(gear_speed->curr_gear > 1) ? gear_speed->curr_gear - 1 : 1;
-		}
-		ctrl_press_time = HAL_GetTick();
-	}
-
-}
-
 void keyboard_chassis_input() {
 	if (g_safety_toggle || g_remote_cmd.right_switch != ge_RSW_ALL_ON) {
 		chassis_ctrl_data.enabled = 0;
