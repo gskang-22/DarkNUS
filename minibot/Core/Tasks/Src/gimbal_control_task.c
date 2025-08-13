@@ -118,13 +118,9 @@ void gimbal_control(motor_data_t *pitch_motor, motor_data_t *yaw_motor) {
 //	angle_pid(gimbal_ctrl_data.pitch,imu_heading.pit, pitch_motor);
 
 	int32_t temp_pit_output = pitch_motor->rpm_pid.output + PITCH_CONST;
-#ifdef MINIBOT_GIMBAL_CAP
-	temp_pit_output = (temp_pit_output < -MINIBOT_GIMBAL_CAP) ? -MINIBOT_GIMBAL_CAP :
-						(temp_pit_output > MINIBOT_GIMBAL_CAP) ? MINIBOT_GIMBAL_CAP : temp_pit_output;
-#else
+
 	temp_pit_output = (temp_pit_output < -20000) ? -20000 :
 						(temp_pit_output > 20000) ? 20000 : temp_pit_output;
-#endif
 
 	pitch_motor->output = temp_pit_output;
 
@@ -165,12 +161,8 @@ void gimbal_control(motor_data_t *pitch_motor, motor_data_t *yaw_motor) {
 	xSemaphoreGive(gimbal_ctrl_data.yaw_semaphore);
 
 	int32_t temp_output = yaw_motor->rpm_pid.output  + (chassis_ctrl_data.yaw * YAW_SPINSPIN_CONSTANT);
-#ifdef MINIBOT_GIMBAL_CAP
-	temp_output = (temp_output < -MINIBOT_GIMBAL_CAP) ? -MINIBOT_GIMBAL_CAP :
-						(temp_output > MINIBOT_GIMBAL_CAP) ? MINIBOT_GIMBAL_CAP : temp_output;
-#else
+
 	temp_output = (temp_output > 20000) ? 20000 : (temp_output < -20000) ? -20000 : temp_output;
-#endif
 	yaw_motor->output = temp_output;
 #ifdef YAW_FEEDFORWARD
 //	speed_pid(yaw_motor->raw_data.rpm + yaw_motor->angle_pid.output, g_chassis_rot, &g_yaw_ff_pid);

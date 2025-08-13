@@ -238,9 +238,6 @@
 #define BR_YAW_MULT			1		//((-BR_DIST * sin(BR_ANG_Y - BR_ANG_PASSIVE - BR_ANG_X)) / (sin(BR_ANG_PASSIVE) * WHEEL_CIRC))
 
 /*********************** OTHERS ***********************/
-#define MINIBOT_CHASSIS_CAP		1500 // Assuming M3508
-#define MINIBOT_GIMBAL_CAP		3000 // Assuming GM6020
-
 #define CONTROL_DELAY 			5
 #define GIMBAL_DELAY			2
 #define CHASSIS_DELAY 			5

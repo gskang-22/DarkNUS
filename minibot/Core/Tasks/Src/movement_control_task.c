@@ -215,34 +215,9 @@ void chassis_motion_control(motor_data_t *motorfr, motor_data_t *motorfl,
 	speed_pid(translation_rpm[3], motorbr->raw_data.rpm, &motorbr->rpm_pid);
 	total_power += fabs(motorbr->rpm_pid.output);
 
-#ifdef MINIBOT_CHASSIS_CAP
-	// Scaling down output values to be below limit
-	float max_rpm = fabs(motorfr->rpm_pid.output);
-	max_rpm =
-			(fabs(motorfl->rpm_pid.output) > max_rpm) ?
-					fabs(motorfl->rpm_pid.output) : max_rpm;
-	max_rpm =
-			(fabs(motorbl->rpm_pid.output) > max_rpm) ?
-					fabs(motorbl->rpm_pid.output) : max_rpm;
-	max_rpm =
-			(fabs(motorbr->rpm_pid.output) > max_rpm) ?
-					fabs(motorbr->rpm_pid.output) : max_rpm;
-
-	float divisor = 1.0;
-	if (max_rpm > MINIBOT_CHASSIS_CAP) {
-		divisor = max_rpm / MINIBOT_CHASSIS_CAP;
-	}
-
-	motorfr->output = motorfr->rpm_pid.output / divisor;
-	motorfl->output = motorfl->rpm_pid.output / divisor;
-	motorbl->output = motorbl->rpm_pid.output / divisor;
-	motorbr->output = motorbr->rpm_pid.output / divisor;
-
-#else
 	motorfr->output = motorfr->rpm_pid.output;
 	motorfl->output = motorfl->rpm_pid.output;
 	motorbl->output = motorbl->rpm_pid.output;
 	motorbr->output = motorbr->rpm_pid.output;
-#endif
 }
 

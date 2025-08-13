@@ -20,20 +20,21 @@ extern TaskHandle_t referee_processing_task_handle;
 extern DMA_HandleTypeDef hdma_usart6_rx;
 referee_limit_t g_referee_limiters;
 static ref_msg_t g_ref_msg_buffer;
+
 ref_game_state_t ref_game_state;
 uint32_t ref_game_state_txno = 0;
+
 ref_game_robot_HP_t ref_robot_hp;
 uint32_t ref_robot_hp_txno = 0;
+
 ref_game_robot_data2_t ref_robot_data;
 uint32_t ref_robot_data_txno = 0;
+
 ref_robot_power_data_t ref_power_data;
 uint32_t ref_power_data_txno = 0;
 
 ref_game_robot_pos_t ref_robot_pos;
 uint32_t ref_robot_pos_txno = 0;
-
-ref_buff_data_t ref_buff_data;
-uint32_t ref_buff_data_txno = 0;
 
 ref_robot_dmg_t ref_dmg_data;
 uint32_t ref_dmg_data_txno = 0;
@@ -60,12 +61,11 @@ void HAL_UART_AbortCpltCallback(UART_HandleTypeDef *huart){
 }
 
 void referee_processing_task(void *argument) {
-	g_referee_limiters.robot_level = 0;
+	g_referee_limiters.robot_level = 1;
 	ref_processing_status_t proc_status;
 	g_referee_limiters.feeding_speed = FEEDER_SPEED;
 	g_referee_limiters.projectile_speed = PROJECTILE_SPEED;
 //	g_referee_limiters.wheel_power_limit = LV1_POWER;
-	g_referee_limiters.robot_level = 1;
 	status_led(7, on_led);
 	status_led(8, off_led);
 	ref_robot_data.robot_id = 0;
@@ -113,18 +113,20 @@ void referee_processing_task(void *argument) {
 						memcpy(&ref_mag_data, &g_ref_msg_buffer.data,
 								sizeof(ref_magazine_data_t));
 						ref_mag_data_txno++;
-						//add in the memcpys here
 						break;
+					//add in the memcpys here
 					default:
 						break;
-					/* todo: Get data from the referee system if necessary
+					/* todo: Get data from the referee system.
+					 *
+					 * We have removed a switch case from above.
+					 *
 					 * Look at the Referee System Serial Port Protocol Appendix
-					 * to find out what Referee System data you can obtain
+					 * to find out what Referee System data you can obtain.
+					 *
+					 * Then, compare with the data used in the code and find what's missing ;)
 					 */
 					}
-//						if (msg_buffer.cmd_id == REF_ROBOT_SHOOT_DATA_CMD_ID){
-//							xQueueSend(uart_data_queue, &msg_buffer, 0);
-//						}
 				} else if (proc_status == INSUFFICIENT_DATA) {
 					break;
 				}
