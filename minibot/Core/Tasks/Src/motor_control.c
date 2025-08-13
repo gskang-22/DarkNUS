@@ -30,12 +30,6 @@ void yangle_pid(double setpoint, double curr_pt, motor_data_t *motor, float imu_
 			ang_diff += 2 * PI;
 		}
 	}
-//	float est_next_ang = ang_diff + (motor->raw_data.rpm * 2 * PI) * 0.01 / 60; //estimated angle in 10ms
-//	if (est_next_ang > PI){
-//		ang_diff -= 2 * PI;
-//	} else if (est_next_ang < -PI){
-//		ang_diff += 2 * PI;
-//	}
 
 	if (*prev_imu_data == imu_data) {
 		return;}
@@ -80,7 +74,7 @@ void yangle_pid(double setpoint, double curr_pt, motor_data_t *motor, float imu_
  *
  */
 void angle_pid(double setpoint, double curr_pt, motor_data_t *motor) {
-	// todo: Implement pid
+	// todo: 2. Implement pid
 }
 
 
@@ -96,7 +90,7 @@ void angle_pid(double setpoint, double curr_pt, motor_data_t *motor) {
  * @param *pid pointer to the rpm_pid struct within the motor's data struct
  */
 void speed_pid(double setpoint, double curr_pt, pid_data_t *pid) {
-	// todo: Implement pid
+	// todo: 1. Implement pid
 }
 
 void kill_can() {
@@ -115,11 +109,6 @@ void float_minmax(float *motor_in, float motor_max, float motor_min) {
 	} else if (*motor_in < -motor_max) {
 		*motor_in = -motor_max;
 	}
-
-//	if (fabs(*motor_in) < motor_min) {
-//		*motor_in = 0;
-//	}
-
 }
 
 /**

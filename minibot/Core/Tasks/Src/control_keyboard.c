@@ -47,7 +47,11 @@ void keyboard_chassis_input() {
 
 
 #ifdef CHASSIS_CAN_SPINSPIN
-			// todo: Map keyboard keys to do spinspin
+			if (g_remote_cmd.keyboard_keys & KEY_OFFSET_Q) {
+				g_spinspin_mode = 1;
+			} else if (g_remote_cmd.keyboard_keys & KEY_OFFSET_E) {
+				g_spinspin_mode = 0;
+			}
 #endif
 
 			if (g_remote_cmd.keyboard_keys & KEY_OFFSET_W) {
@@ -64,7 +68,7 @@ void keyboard_chassis_input() {
 				horizontal_input += KEYBD_MAX_SPD;
 			}
 
-			// todo: Spinspin logic, make the chassis spin!
+			// todo: 5. Spinspin logic, make the chassis spin!
 
 			chassis_set_ctrl(forward_input, horizontal_input, yaw_input);
 		}

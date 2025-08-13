@@ -85,12 +85,67 @@ void launcher_control_task(void *argument) {
 
 uint16_t check_overheat() {
 #ifdef OVERHEAT_PROTECTION
-	/* todo: I wonder what's overheating ...
-	 * Hint 1: look at the name of this file
-	 * Hint 2: you need to get some data from the referee system
-	 */
 
-	return 1;
+	uint8_t active_feeder;
+	int32_t ammo_remaining;
+	static uint32_t last_time;
+	if (ref_robot_data.robot_id == 0) {
+		//referee system not connected
+		return 10;
+	}
+
+#ifdef BULLET_17
+	//if double barrel launcher, check launcher with more heat only
+	if (ref_power_data.shooter_17mm_1_barrel_heat >= ref_power_data.shooter_17mm_2_barrel_heat) {
+		active_feeder = 0;
+	} else {
+		active_feeder = 1;
+	}
+
+	if (active_feeder == 0) {
+		ammo_remaining = (((ref_robot_data.shooter_barrel_heat_limit
+				- ref_power_data.shooter_17mm_1_barrel_heat - OVERHEAT_OFFSET)) / BULLET_17_HEAT);
+	} else if (active_feeder == 1) {
+		ammo_remaining = (((ref_robot_data.shooter_barrel_heat_limit
+				- ref_power_data.shooter_17mm_2_barrel_heat - OVERHEAT_OFFSET)) / BULLET_17_HEAT);
+	}
+
+	if (prev_power_data_no != ref_power_data_txno) {
+		prev_power_data_no = ref_power_data_txno;
+		last_time = get_microseconds();
+		if (ammo_remaining < OVERHEAT_MARGIN) {
+			return 0;
+		} else {
+			return ammo_remaining;
+		}
+	} else {
+		//no updated heat information, guessing ammo remaining;
+		uint32_t time_diff = get_microseconds() - last_time;
+		if (active_feeder == 0) {
+			ammo_remaining += (ref_robot_data.shooter_barrel_cooling_value
+					* time_diff / TIMER_FREQ);
+			ammo_remaining -= FEEDER_SPEED * time_diff
+					/ (TIMER_FREQ * 60);
+		} else if (active_feeder == 1) {
+
+			ammo_remaining += (ref_robot_data.shooter_barrel_cooling_value
+					* time_diff / TIMER_FREQ);
+			ammo_remaining -= FEEDER_SPEED * time_diff
+					/ (TIMER_FREQ * 60);
+		}
+		if (ammo_remaining < OVERHEAT_MARGIN) {
+			return 0;
+		} else {
+			return ammo_remaining;
+		}
+		return ammo_remaining;
+	}
+#endif
+
+	return ammo_remaining;
+
+#else
+	return 100;
 #endif
 }
 

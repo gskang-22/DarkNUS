@@ -114,10 +114,10 @@ void referee_processing_task(void *argument) {
 								sizeof(ref_magazine_data_t));
 						ref_mag_data_txno++;
 						break;
-					//add in the memcpys here
+					// add your code here !!
 					default:
 						break;
-					/* todo: Get data from the referee system.
+					/* todo: 6. Get data from the referee system
 					 *
 					 * We have removed a switch case from above.
 					 *
